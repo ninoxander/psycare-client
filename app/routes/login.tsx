@@ -46,8 +46,7 @@ export async function action({ request }) {
 
         const data = await response.json()
 
-        // Guardar la información de autenticación en la cookie
-        return redirect("/profile", {
+        return redirect("/perfil", {
             headers: {
                 "Set-Cookie": await authCookie.serialize({
                     token: data.token,

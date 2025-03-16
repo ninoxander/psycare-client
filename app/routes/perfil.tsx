@@ -16,11 +16,36 @@ export async function loader({ request }) {
     const cookieHeader = request.headers.get("Cookie")
     const cookie = await authCookie.parse(cookieHeader)
 
-    if (!cookie || !cookie.user) {
+    if (!cookie || !cookie.token) {
         return redirect("/login")
     }
 
-    return json({ user: cookie.user })
+    try {
+        const response = await fetch("http://localhost:3000/users", {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${cookie.token}`,
+            },
+        })
+
+        if (!response.ok) {
+            throw new Error("Error al obtener datos del usuario")
+        }
+
+        const userData = await response.json()
+        return json({ user: userData })
+    } catch (error) {
+        // Si hay un error en la petición, intentamos usar los datos de la cookie como respaldo
+        if (cookie.user) {
+            return json({
+                user: cookie.user,
+                error: "No se pudieron actualizar los datos del usuario. Mostrando datos almacenados.",
+            })
+        }
+
+        // Si no hay datos en la cookie, redirigimos al login
+        return redirect("/login")
+    }
 }
 
 export async function action({ request }) {
@@ -44,7 +69,7 @@ export async function action({ request }) {
 }
 
 export default function Perfil() {
-    const { user } = useLoaderData()
+    const { user, error } = useLoaderData()
 
     const formatDate = (dateString) => {
         if (!dateString) return "No disponible"
@@ -58,6 +83,10 @@ export default function Perfil() {
     return (
         <div className="min-h-screen bg-gradient-to-br from-teal-50 to-blue-50 p-4 sm:p-6 md:p-8">
             <div className="max-w-3xl mx-auto">
+                {error && (
+                    <div className="mb-4 p-3 bg-amber-50 border border-amber-200 text-amber-700 rounded-lg text-sm">{error}</div>
+                )}
+
                 <div className="bg-white rounded-xl shadow-lg overflow-hidden">
                     <div className="p-6 sm:p-8">
                         <div className="flex justify-between items-center mb-8">
@@ -73,7 +102,7 @@ export default function Perfil() {
                                     </button>
                                 </Form>
                                 <a
-                                    href="/profile/edit"
+                                    href="/edit"
                                     className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition-colors focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 focus:outline-none text-sm font-medium inline-flex items-center"
                                 >
                                     Editar perfil
@@ -97,14 +126,26 @@ export default function Perfil() {
                                     <h3 className="text-sm font-medium text-slate-500 mb-1">Miembro desde</h3>
                                     <p className="text-slate-800 font-medium">{formatDate(user.created_at)}</p>
                                 </div>
+
+                                {user.age !== null && user.age !== undefined && (
+                                    <div className="bg-slate-50 p-5 rounded-xl border border-slate-100">
+                                        <h3 className="text-sm font-medium text-slate-500 mb-1">Edad</h3>
+                                        <p className="text-slate-800 font-medium">{user.age} años</p>
+                                    </div>
+                                )}
+
+                                {user.pronouns && (
+                                    <div className="bg-slate-50 p-5 rounded-xl border border-slate-100">
+                                        <h3 className="text-sm font-medium text-slate-500 mb-1">Pronombres</h3>
+                                        <p className="text-slate-800 font-medium">{user.pronouns}</p>
+                                    </div>
+                                )}
                             </div>
 
-                            {user.bio && (
-                                <div className="bg-slate-50 p-5 rounded-xl border border-slate-100">
-                                    <h3 className="text-sm font-medium text-slate-500 mb-2">Biografía</h3>
-                                    <p className="text-slate-700 leading-relaxed">{user.bio}</p>
-                                </div>
-                            )}
+                            <div className="bg-slate-50 p-5 rounded-xl border border-slate-100">
+                                <h3 className="text-sm font-medium text-slate-500 mb-2">Biografía</h3>
+                                <p className="text-slate-700 leading-relaxed">{user.bio || "No disponible"}</p>
+                            </div>
 
                             <div className="border-t border-slate-200 pt-6">
                                 <h3 className="text-lg font-medium text-slate-700 mb-4">Información adicional</h3>
