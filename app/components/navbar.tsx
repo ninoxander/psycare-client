@@ -1,9 +1,12 @@
 import { useState, useEffect } from "react"
-import { Link } from "@remix-run/react"
+import { Link, useLoaderData } from "@remix-run/react"
 import UserDropdown from "~/components/user-dropdown"
 import NotificationDropdown from "~/components/notification-dropdown"
 import SearchBar from "~/components/search-bar"
 import { createCookie } from "@remix-run/node"
+
+
+
 
 // Definición de tipos
 interface NavbarProps {
@@ -11,6 +14,7 @@ interface NavbarProps {
 }
 
 export default function Navbar({ token }: NavbarProps) {
+    // const { navbarData = [] } = useLoaderData();
     const [isMenuOpen, setIsMenuOpen] = useState(false)
     const [user, setUser] = useState(null)
     const [notifications, setNotifications] = useState([])

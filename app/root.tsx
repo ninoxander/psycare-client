@@ -3,14 +3,14 @@ import {
   Meta,
   Outlet,
   Scripts,
-  ScrollRestoration,
-  useLoaderData
+  ScrollRestoration
 } from "@remix-run/react";
 import { json, type LoaderFunctionArgs } from "@remix-run/node"
 import type { LinksFunction } from "@remix-run/node";
 
 import "./tailwind.css";
-import Navbar, { getNavbarData } from "~/components/navbar";
+// import Navbar, { getNavbarData } from "~/components/navbar";
+
 
 export const links: LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -24,6 +24,9 @@ export const links: LinksFunction = () => [
     href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
   },
 ];
+/*
+
+No sirve por ahora.
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const navbarData = await getNavbarData(request)
@@ -32,9 +35,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
     navbarData,
   })
 }
-
+*/
 export function Layout({ children }: { children: React.ReactNode }) {
-  const { navbarData } = useLoaderData<typeof loader>()
   return (
     <html lang="en">
       <head>
@@ -45,7 +47,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <script src="https://kit.fontawesome.com/38a3806765.js" crossOrigin="anonymous"></script>
       </head>
       <body>
-        <Navbar token={navbarData.token} />
+        
         {children}
         <ScrollRestoration />
         <Scripts />

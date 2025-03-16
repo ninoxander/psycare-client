@@ -1,8 +1,13 @@
-import { json, redirect } from "@remix-run/node"
+import { json, redirect, MetaFunction } from "@remix-run/node"
 import { useLoaderData, Form } from "@remix-run/react"
 import { createCookie } from "@remix-run/node"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
+import { createMeta } from "~/utils/title";
+
+export const meta: MetaFunction = () => {
+    return createMeta("Mi perfil", "Página del perfil");
+};
 
 const authCookie = createCookie("auth", {
     httpOnly: true,
@@ -118,8 +123,12 @@ export default function Perfil() {
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="bg-slate-50 p-5 rounded-xl border border-slate-100">
-                                    <h3 className="text-sm font-medium text-slate-500 mb-1">Correo electrónico</h3>
-                                    <p className="text-slate-800 font-medium">{user.email}</p>
+                                    <h3 className="text-sm font-medium text-slate-500 mb-1">
+                                        <i className="fa-solid fa-envelope"></i> Correo electrónico
+                                    </h3>
+                                    <p className="text-slate-800 font-medium">
+                                        {user.email}
+                                    </p>
                                 </div>
 
                                 <div className="bg-slate-50 p-5 rounded-xl border border-slate-100">

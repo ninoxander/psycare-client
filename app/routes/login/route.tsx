@@ -3,6 +3,10 @@ import { Form, useActionData, useNavigation } from "@remix-run/react"
 import { useState } from "react"
 import { createCookie } from "@remix-run/node"
 
+export async function loader() {
+    return json({ message: "Bienvenido a la página de login" });
+}
+
 const authCookie = createCookie("auth", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
@@ -159,7 +163,7 @@ export default function Login() {
 
                         <div className="text-center text-sm text-slate-500 mt-4">
                             ¿No tienes una cuenta?{" "}
-                            <a href="/registro" className="text-teal-600 hover:text-teal-700 font-medium">
+                            <a href="/signup" className="text-teal-600 hover:text-teal-700 font-medium">
                                 Regístrate
                             </a>
                         </div>
